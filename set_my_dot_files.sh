@@ -14,7 +14,7 @@ if [ -x /usr/bin/git ]; then
 	echo "WARNING: Temp directory exist, this script rename the old"
 	mv -f ~/temp ~/temp.old
     fi
-    
+
     exec git clone https://github.com/Dizzy-cz/DotFiles ~/temp
 else
     echo "ERROR: Please install git"
