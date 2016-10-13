@@ -2,12 +2,13 @@
 
 # Variable
 tempDir=~/temp
+gitRemote="https://github.com/Dizzy-cz/DotFiles"
 
 # Functions
 failed()
 {
     echo "ERROR: Something was wrong!"
-    return 1
+    return 2
 }
 
 # Download actual version form git into $tempDir
@@ -24,14 +25,14 @@ if [ -x /usr/bin/git ]; then
 	mv -f $tempDir $tempDir.old
     fi
 
-    git clone https://github.com/Dizzy-cz/DotFiles $tempDir
+    git clone $gitRemote $tempDir
 else
     echo "ERROR: Please install git"
     failed
 fi
 
 
-# Get list of config files
+# Get list of config files/directories in $tempDir
 configFiles=$(ls -A $tempDir |grep -v '.git\|README.md')
 
 # Copy config files to right path
@@ -39,9 +40,22 @@ for file in $configFiles; do
     echo "Processing file: $file"
 
     if [ -e ~/$file ]; then
-	    echo "WARNING: $file exist, this script rename the old"
+	echo "WARNING: $file exist, this script rename the old"
+	
+	if [ -d $tempDir/$file ]; then
+	    echo "INFO: $file is Directory"
+
+	    if [ -d ~/$file.old ]; then
+		rm -rfv ~/$file.old
+	    fi
+	    
+	    mkdir ~/$file.old
+	    mv -v ~/$file/.[!.]* ~/$file.old
+	else
 	    mv ~/$file ~/$file.old
+	fi
+	
     fi
     
-    cp $tempDir/$file ~/
+    cp -r $tempDir/$file ~/
 done
