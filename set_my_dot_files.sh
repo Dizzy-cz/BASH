@@ -11,6 +11,35 @@ failed()
     return 2
 }
 
+copyFiles()
+{
+    # Variables
+    destDir=~
+    # Code
+
+    echo "$destDir/$file"
+    if [ -e $destDir/$file ]; then
+	echo "WARNING: $file exist, this script rename the old"
+	
+	if [ -d $destDir/$file ]; then
+	    echo "INFO: $file is Directory"
+
+	    if [ -d $destDir/$file.old ]; then
+		echo "WARNING: $file.old directory exist, remove the old"
+		rm -rfv $destDir/$file.old
+	    fi
+	    
+	    mkdir $destDir/$file.old
+	    mv -v $destDir/$file/.[!.]* $destDir/$file.old
+	else
+	    mv $destDir/$file $destDir/$file.old
+	fi
+    else
+	echo "WTF"
+    fi
+}
+
+# Code
 # Download actual version form git into $tempDir
 if [ -x /usr/bin/git ]; then
 
@@ -39,23 +68,23 @@ configFiles=$(ls -A $tempDir |grep -v '.git\|README.md')
 for file in $configFiles; do
     echo "Processing file: $file"
 
-    if [ -e ~/$file ]; then
-	echo "WARNING: $file exist, this script rename the old"
-	
-	if [ -d $tempDir/$file ]; then
-	    echo "INFO: $file is Directory"
-
-	    if [ -d ~/$file.old ]; then
-		rm -rfv ~/$file.old
-	    fi
-	    
-	    mkdir ~/$file.old
-	    mv -v ~/$file/.[!.]* ~/$file.old
-	else
-	    mv ~/$file ~/$file.old
-	fi
-	
-    fi
-    
-    cp -r $tempDir/$file ~/
+#    if [ -e ~/$file ]; then
+#	echo "WARNING: $file exist, this script rename the old"
+#	
+#	if [ -d $tempDir/$file ]; then
+#	    echo "INFO: $file is Directory"
+#
+#	    if [ -d ~/$file.old ]; then
+#		rm -rfv ~/$file.old
+#	    fi
+#	    
+#	    mkdir ~/$file.old
+#	    mv -v ~/$file/.[!.]* ~/$file.old
+#	else
+#	    mv ~/$file ~/$file.old
+#	fi
+#	
+#   fi
+    copyFiles
+    cp -rv $tempDir/$file ~/
 done
